@@ -1,0 +1,48 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Wochentag-Timer",
+        "description": "Uhrzeit und Wochentage für Automationen.",
+        "data": {
+          "name": "Name"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_time": {
+      "name": "Uhrzeit setzen",
+      "description": "Setzt die Auslösezeit.",
+      "fields": {
+        "time": {
+          "name": "Uhrzeit",
+          "description": "Neue Uhrzeit (HH:MM)."
+        }
+      }
+    },
+    "set_weekdays": {
+      "name": "Wochentage setzen",
+      "description": "Setzt die aktiven Wochentage.",
+      "fields": {
+        "weekdays": {
+          "name": "Wochentage",
+          "description": "Liste der Tage."
+        }
+      }
+    }
+  },
+  "selector": {
+    "weekday": {
+      "options": {
+        "mon": "Montag",
+        "tue": "Dienstag",
+        "wed": "Mittwoch",
+        "thu": "Donnerstag",
+        "fri": "Freitag",
+        "sat": "Samstag",
+        "sun": "Sonntag"
+      }
+    }
+  }
+}

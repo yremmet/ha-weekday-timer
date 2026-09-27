@@ -1,0 +1,48 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Weekday timer",
+        "description": "Time and weekdays for automations.",
+        "data": {
+          "name": "Name"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_time": {
+      "name": "Set time",
+      "description": "Sets the trigger time.",
+      "fields": {
+        "time": {
+          "name": "Time",
+          "description": "New time (HH:MM)."
+        }
+      }
+    },
+    "set_weekdays": {
+      "name": "Set weekdays",
+      "description": "Sets the active weekdays.",
+      "fields": {
+        "weekdays": {
+          "name": "Weekdays",
+          "description": "List of days."
+        }
+      }
+    }
+  },
+  "selector": {
+    "weekday": {
+      "options": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      }
+    }
+  }
+}

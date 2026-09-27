@@ -1,0 +1,10 @@
+"""Konstanten für Weekday Timer."""
+DOMAIN = "weekday_timer"
+VERSION = "0.1.0"
+EVENT_FIRED = "weekday_timer_fired"
+WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+CARD_URL = "/weekday_timer/weekday-timer-card.js"
+CONF_NAME = "name"
+ATTR_TIME = "time"
+ATTR_WEEKDAYS = "weekdays"
+ATTR_NEXT = "next_trigger"

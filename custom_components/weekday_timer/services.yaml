@@ -1,0 +1,23 @@
+set_time:
+  target:
+    entity:
+      integration: weekday_timer
+  fields:
+    time:
+      required: true
+      example: "07:30"
+      selector:
+        time:
+set_weekdays:
+  target:
+    entity:
+      integration: weekday_timer
+  fields:
+    weekdays:
+      required: true
+      example: '["mon", "wed", "fri"]'
+      selector:
+        select:
+          multiple: true
+          translation_key: weekday
+          options: [mon, tue, wed, thu, fri, sat, sun]
