@@ -33,7 +33,7 @@ class WeekdayTimerCard extends HTMLElement {
   }
 
   getCardSize() {
-    return 3;
+    return 2;
   }
 
   _call(service, data, domain = DOMAIN) {
@@ -44,48 +44,64 @@ class WeekdayTimerCard extends HTMLElement {
     const root = this.attachShadow({ mode: "open" });
     root.innerHTML = `
       <style>
-        ha-card { padding: 16px; }
-        .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .title { display: flex; align-items: center; gap: 12px; min-width: 0; cursor: pointer;
-                 font-size: 16px; font-weight: 500; color: var(--primary-text-color); }
-        .title span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .title ha-icon { color: var(--state-icon-color); flex: none; }
-        ha-card.on .title ha-icon { color: var(--state-active-color, var(--primary-color)); }
-        .time { display: block; width: 100%; box-sizing: border-box; margin: 12px 0 14px;
-                padding: 4px 0; border: none; background: none; outline: none;
-                font: inherit; font-size: 52px; font-weight: 300; letter-spacing: -0.02em;
-                font-variant-numeric: tabular-nums; text-align: center;
-                color: var(--primary-text-color); color-scheme: light dark; cursor: pointer; }
-        .time:focus-visible { border-radius: 12px; box-shadow: 0 0 0 2px var(--primary-color); }
-        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day { height: 40px; border-radius: 20px; border: 1px solid var(--divider-color);
+        ha-card { padding: 12px 16px; }
+        .row { display: flex; align-items: center; gap: 12px; }
+        .icon { flex: none; color: var(--state-icon-color); }
+        ha-card.on .icon { color: var(--state-active-color, var(--primary-color)); }
+        .info { flex: 1; min-width: 0; cursor: pointer; }
+        .name, .next { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .name { font-size: 16px; color: var(--primary-text-color); }
+        .next { font-size: 12px; color: var(--secondary-text-color); margin-top: 2px; }
+
+        /* Zeitfeld im Stil des HA-Uhrzeit-Eingabefelds */
+        .tf { flex: none; display: flex; align-items: flex-end; gap: 6px;
+              padding: 6px 12px 5px; border-radius: 4px 4px 0 0;
+              background: var(--mdc-text-field-fill-color, var(--secondary-background-color));
+              border-bottom: 1px solid var(--mdc-text-field-idle-line-color, var(--secondary-text-color));
+              transition: border-color .15s; }
+        .tf:focus-within { border-bottom: 2px solid var(--primary-color); padding-bottom: 4px; }
+        .seg { display: flex; flex-direction: column; }
+        .seg span { font-size: 11px; line-height: 14px; color: var(--secondary-text-color); }
+        .tf:focus-within .seg:focus-within span { color: var(--primary-color); }
+        .seg input { width: 2.4ch; padding: 0; border: none; outline: none; background: none;
+                     font: inherit; font-size: 16px; line-height: 22px; text-align: right;
+                     font-variant-numeric: tabular-nums; color: var(--primary-text-color); }
+        .colon { color: var(--secondary-text-color); line-height: 22px; }
+
+        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+        .day { height: 32px; border-radius: 16px; border: 1px solid var(--divider-color);
                background: none; color: var(--primary-text-color); font: inherit;
-               font-size: 13px; font-weight: 500; cursor: pointer;
+               font-size: 12px; font-weight: 500; cursor: pointer; padding: 0;
                transition: background-color .15s, color .15s, border-color .15s; }
         .day.active { background: var(--primary-color); border-color: var(--primary-color);
                       color: var(--text-primary-color, #fff); }
         .day:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-        .next { margin-top: 12px; text-align: center; font-size: 13px;
-                color: var(--secondary-text-color); }
-        ha-card:not(.on) .time, ha-card:not(.on) .days { opacity: .4; }
-        @media (prefers-reduced-motion: reduce) { .day { transition: none; } }
+        ha-card:not(.on) .tf, ha-card:not(.on) .days { opacity: .45; }
+        @media (prefers-reduced-motion: reduce) { .day, .tf { transition: none; } }
       </style>
       <ha-card>
-        <div class="head">
-          <div class="title" role="button" tabindex="0">
-            <ha-icon icon="mdi:calendar-clock"></ha-icon><span></span>
+        <div class="row">
+          <ha-icon class="icon" icon="mdi:calendar-clock"></ha-icon>
+          <div class="info" role="button" tabindex="0">
+            <div class="name"></div>
+            <div class="next"></div>
+          </div>
+          <div class="tf">
+            <label class="seg"><span>hh</span>
+              <input class="hh" inputmode="numeric" maxlength="2" aria-label="Stunden"></label>
+            <span class="colon">:</span>
+            <label class="seg"><span>mm</span>
+              <input class="mm" inputmode="numeric" maxlength="2" aria-label="Minuten"></label>
           </div>
           <ha-switch></ha-switch>
         </div>
-        <input class="time" type="time" aria-label="Uhrzeit">
         <div class="days"></div>
-        <div class="next"></div>
       </ha-card>`;
 
     const $ = (s) => root.querySelector(s);
     this._els = {
-      card: $("ha-card"), title: $(".title"), name: $(".title span"),
-      toggle: $("ha-switch"), time: $(".time"), days: $(".days"), next: $(".next"),
+      card: $("ha-card"), info: $(".info"), name: $(".name"), next: $(".next"),
+      toggle: $("ha-switch"), hh: $(".hh"), mm: $(".mm"), days: $(".days"),
     };
 
     this._els.dayButtons = DAYS.map((d, i) => {
@@ -104,15 +120,43 @@ class WeekdayTimerCard extends HTMLElement {
     this._els.toggle.addEventListener("change", (ev) =>
       this._call(ev.target.checked ? "turn_on" : "turn_off", {}, "switch")
     );
-    this._els.time.addEventListener("change", (ev) => {
-      if (ev.target.value) this._call("set_time", { time: ev.target.value });
+
+    const { hh, mm } = this._els;
+    [[hh, 23], [mm, 59]].forEach(([inp, max]) => {
+      inp.addEventListener("focus", () => inp.select());
+      inp.addEventListener("input", () => {
+        inp.value = inp.value.replace(/\D/g, "").slice(0, 2);
+        if (inp === hh && inp.value.length === 2) mm.focus();
+      });
+      inp.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") inp.blur();
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const v = (parseInt(inp.value, 10) || 0) + (e.key === "ArrowUp" ? 1 : -1);
+          inp.value = String((v + max + 1) % (max + 1)).padStart(2, "0");
+          this._commitTime();
+          inp.select();
+        }
+      });
+      inp.addEventListener("change", () => this._commitTime());
     });
+
     const moreInfo = () =>
       this.dispatchEvent(new CustomEvent("hass-more-info", {
         detail: { entityId: this._config.entity }, bubbles: true, composed: true,
       }));
-    this._els.title.addEventListener("click", moreInfo);
-    this._els.title.addEventListener("keydown", (e) => e.key === "Enter" && moreInfo());
+    this._els.info.addEventListener("click", moreInfo);
+    this._els.info.addEventListener("keydown", (e) => e.key === "Enter" && moreInfo());
+  }
+
+  _commitTime() {
+    const clamp = (v, max) => Math.min(max, Math.max(0, parseInt(v, 10) || 0));
+    const h = String(clamp(this._els.hh.value, 23)).padStart(2, "0");
+    const m = String(clamp(this._els.mm.value, 59)).padStart(2, "0");
+    this._els.hh.value = h;
+    this._els.mm.value = m;
+    const time = `${h}:${m}`;
+    if (time !== this._state()?.attributes.time) this._call("set_time", { time });
   }
 
   _state() {
@@ -134,21 +178,25 @@ class WeekdayTimerCard extends HTMLElement {
     e.name.textContent = this._config.name || a.friendly_name || st.entity_id;
     e.card.classList.toggle("on", on);
     e.toggle.checked = on;
-    if (this.shadowRoot.activeElement !== e.time) e.time.value = a.time || "";
+
+    const active = this.shadowRoot.activeElement;
+    if (active !== e.hh && active !== e.mm && a.time) {
+      const [h, m] = a.time.split(":");
+      e.hh.value = h;
+      e.mm.value = m;
+    }
 
     e.dayButtons.forEach((b, i) => {
-      const active = days.includes(DAYS[i]);
-      b.classList.toggle("active", active);
-      b.setAttribute("aria-pressed", String(active));
+      const isOn = days.includes(DAYS[i]);
+      b.classList.toggle("active", isOn);
+      b.setAttribute("aria-pressed", String(isOn));
     });
 
     if (!on) e.next.textContent = "Deaktiviert";
-    else if (!days.length) e.next.textContent = "Wähle mindestens einen Tag";
+    else if (!days.length) e.next.textContent = "Kein Tag ausgewählt";
     else if (a.next_trigger) {
-      const d = new Date(a.next_trigger);
-      e.next.textContent = "Nächste Auslösung " + d.toLocaleString(this._hass.language || "de", {
-        weekday: "long", hour: "2-digit", minute: "2-digit",
-      });
+      e.next.textContent = "Nächste: " + new Date(a.next_trigger).toLocaleString(
+        this._hass.language || "de", { weekday: "short", hour: "2-digit", minute: "2-digit" });
     } else e.next.textContent = "";
   }
 }
